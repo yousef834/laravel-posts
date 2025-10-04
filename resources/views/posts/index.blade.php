@@ -9,12 +9,13 @@
   </div>
 </div>
 
-
-
 <div class="container mt-5">
   <div class="card shadow">
     <div class="card-body">
 
+      @if($posts->isEmpty())
+          <p class="text-center">You don't have any posts yet.</p>
+      @else
       <table class="table">
         <thead>
           <tr>
@@ -27,29 +28,29 @@
         </thead>
         <tbody>
           @foreach ($posts as $post)
-            
           <tr>
-            <th scope="row">{{$post['id']}}</th>
-            <td>{{$post['title']}}</td>
+            <th scope="row">{{$post->id}}</th>
+            <td>{{$post->title}}</td>
             <td>{{$post->user ? $post->user->name : 'not found'}}</td>
-            <td>{{$post['created_at']}}</td>
+            <td>{{$post->created_at}}</td>
             <td>
-              <a href="{{route('post.show',$post['id'])}}" class="btn btn-info btn-sm">View</a>
-              <a href="{{route('post.edit',$post['id'])}}" class="btn btn-primary btn-sm">Edit</a>
-              <form method="POST" action="{{ route('post.destroy', $post['id']) }}" style="display:inline;">
+              <a href="{{route('post.show',$post->id)}}" class="btn btn-info btn-sm">View</a>
+              <a href="{{route('post.edit',$post->id)}}" class="btn btn-primary btn-sm">Edit</a>
+              <form method="POST" action="{{ route('post.destroy', $post->id) }}" style="display:inline;">
                 @csrf
                 @method('DELETE')
                 <button 
-                type="submit" class="btn btn-danger btn-sm"
-                onclick="return confirm('Are you sure you want to delete this post?');"
-                >Delete
-              </button>
+                  type="submit" class="btn btn-danger btn-sm"
+                  onclick="return confirm('Are you sure you want to delete this post?');"
+                >Delete</button>
               </form>
             </td>
           </tr>
           @endforeach
         </tbody>
       </table>
+      @endif
+
     </div>
   </div>
 </div>

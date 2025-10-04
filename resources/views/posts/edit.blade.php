@@ -27,13 +27,23 @@
     <textarea name="description" class="form-control" rows="3" value="{{ old('description')}}">{{$post->description}} </textarea>
   </div>
 
-  <div class="mb-3">
+  {{-- <div class="mb-3">
     <label class="form-label">Post Creator</label>
     <select name="post_creator" class="form-control">
             @foreach ($users as $user )
       <option @if ($user->id == $post->user_id) selected @endif value="{{$user->id}}">{{$user->name}}</option>
         
       @endforeach
+    </select>
+  </div> --}}
+
+
+    <div class="mb-3">
+    <label class="form-label">Post Creator</label>
+    <select name="post_creator" class="form-control">
+
+      <option value="{{$users->id}}">{{$users->name}}</option>
+        
     </select>
   </div>
 

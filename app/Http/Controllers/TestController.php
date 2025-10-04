@@ -2,18 +2,79 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class TestController extends Controller
 {
+public function showLogin()
+    {
+        return view('posts.login');
+    }
+
+public function Login(Request $request)
+{
+    // Validate the incoming request data
+    $credentials = $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required'],
+    ]);
+
+    $user = User::where('email', $request->email)->first();
+
+    if ($user && Hash::check($request->password, $user->password)) {
+        Auth::login($user); // تسجيل الدخول يدوي
+        return redirect()->route('index.action');
+    }
+
+    return back()->withErrors(['email' => 'Invalid credentials']);
+}
+
+public function showRegister()
+    {
+        return view('posts.register');
+    }
+    
+public function register(Request $request)
+{
+
+
+    // $request->validate([
+    //     'name' => ['required', 'string', 'max:255'],
+    //     'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+    //     'password' => ['required', 'string', 'min:6', 'confirmed'],
+    // ]);
+
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+    ]);
+
+
+    return redirect()->route('login')->with('success', 'User registered successfully, please login.');
+
+
+
+}
+public function logout(Request $request)
+{
+    Auth::logout();
+    // $request->session()->invalidate();
+    // $request->session()->regenerateToken();
+    return redirect()->route('login');
+}
+
+
 public function testAction()  
   {
-    //see all posts from database
-    $postsFromDB = Post::all();
-    
-    return view('/posts/index',['posts' => $postsFromDB]);
+    $posts = Auth::user()->posts; // Collection بكل البوستات الخاصة باليوزر
+
+    return view('posts.index', compact('posts'));
   }
 
 public function show($postId)
@@ -30,7 +91,7 @@ public function show($postId)
 
 public function create()
   {
-    $users = User::all();
+    $users = Auth::user();
     return view('/posts/create',  ['users' => $users]);
   }
 
@@ -62,7 +123,7 @@ public function store()
   public function edit($postId)
   {
     //select all users from the database
-    $users = User::all();
+    $users = Auth::user();
     $post = Post::find($postId);
     
     return view('posts.edit', ['users' => $users], ['post' => $post]);
